@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+
+    <handlers>
+      <add name="iisnode" path="dist/main.js" verb="*" modules="iisnode" />
+    </handlers>
+
+    <rewrite>
+      <rules>
+        <rule name="NodeApp" stopProcessing="true">
+          <match url=".*" />
+          <action type="Rewrite" url="dist/main.js" />
+        </rule>
+      </rules>
+    </rewrite>
+
+    <webSocket enabled="true" />
+
+    <httpErrors existingResponse="PassThrough" />
+
+  </system.webServer>
+</configuration>
