@@ -29,7 +29,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+    return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @ApiOperation({ summary: 'User registration' })
+  @ApiResponse({ status: 201, description: 'User successfully registered' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  signUp(@Body() signUpDto: SignInDto) {
+    return this.authService.signUp(signUpDto.email, signUpDto.password);
   }
 
   @ApiBearerAuth()
