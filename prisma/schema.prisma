@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -23,7 +24,8 @@ model Users {
   id            Int             @id @default(autoincrement())
   email         String          @unique
   password      String
-  provider      AuthProvider
+  fullName      String?
+  provider      AuthProvider?
   createdAt     DateTime        @default(now())
   Location      Locations[]
   Collections   Collections[]
@@ -37,7 +39,7 @@ model Locations {
   user            Users             @relation(fields: [userId], references: [id])
   userId          Int
   title           String
-  description     String
+  description     String?
   latitude        Float
   longitude       Float
   address         String
@@ -47,6 +49,9 @@ model Locations {
   category        Categories?       @relation(fields: [categoryId], references: [id])
   categoryId      Int?
   CollectionItems CollectionItems[]
+
+  @@index([userId])
+  @@index([latitude, longitude])
 }
 
 // Category model
@@ -82,6 +87,8 @@ model Collections {
   description     String
   isPublic        Boolean           @default(false)
   CollectionItems CollectionItems[]
+
+  @@unique([userId, name])
 }
 
 // Collection items model
