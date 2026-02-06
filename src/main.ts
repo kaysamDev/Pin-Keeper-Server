@@ -9,7 +9,6 @@ async function bootstrap() {
     .setTitle('Pin Keeper')
     .setDescription('The Pin Keeper API description')
     .setVersion('1.0')
-    .addTag('pin-keeper')
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);

@@ -8,6 +8,10 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateLocationDto {
+  @ApiProperty({ description: 'The ID of loaction' })
+  @IsInt()
+  id: number;
+
   @ApiProperty({ description: 'The ID of the user who owns this location' })
   @IsInt()
   userId: number;

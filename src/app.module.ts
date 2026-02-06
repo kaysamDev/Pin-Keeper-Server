@@ -6,6 +6,8 @@ import { AuthService } from './models/auth/auth.service';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { LocationsModule } from './locations/locations.module';
+import { CategoriesModule } from './categories/categories.module';
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { LocationsModule } from './locations/locations.module';
     AuthModule,
     UsersModule,
     LocationsModule,
+    CategoriesModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AuthService, AppService],
