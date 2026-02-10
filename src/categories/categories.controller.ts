@@ -24,7 +24,7 @@ export class CategoriesController {
   @ApiResponse({ status: 200, description: 'Categories Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
-  @Get('categories')
+  @Get()
   async getCategories(): Promise<Categories[] | null> {
     return await this.categoriesService.getCategories({});
   }
@@ -42,7 +42,7 @@ export class CategoriesController {
   @ApiResponse({ status: 201, description: 'Category Created' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @Post('category')
+  @Post()
   async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     const { name, Locations } = createCategoryDto;
     return this.categoriesService.createCategory({

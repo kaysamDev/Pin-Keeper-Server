@@ -33,7 +33,7 @@ export class LocationsController {
   @ApiResponse({ status: 200, description: 'User Locations Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
-  @Get('locations')
+  @Get()
   async getAllLocations(): Promise<Locations[] | null> {
     return this.locationsService.locations({});
   }
@@ -42,7 +42,7 @@ export class LocationsController {
   @ApiResponse({ status: 200, description: 'Location Created' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @Post('location')
+  @Post()
   async createLocation(@Body() createLocationDto: CreateLocationDto) {
     const { userId, categoryId, ...locationData } = createLocationDto;
     return this.locationsService.createLocation({
