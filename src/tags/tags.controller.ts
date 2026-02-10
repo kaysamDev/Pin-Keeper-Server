@@ -24,7 +24,7 @@ export class TagsController {
   @ApiResponse({ status: 200, description: 'Tags Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
-  @Get('tags')
+  @Get()
   async getTags(): Promise<Tags[] | null> {
     return await this.tagsService.getTags({});
   }
@@ -42,7 +42,7 @@ export class TagsController {
   @ApiResponse({ status: 201, description: 'Tag Created' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @Post('tag')
+  @Post()
   async createTag(@Body() createTagDto: CreateTagDto) {
     const { name, locationIds } = createTagDto;
     return this.tagsService.createTag({

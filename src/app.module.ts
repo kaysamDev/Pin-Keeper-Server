@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { LocationTagsModule } from './location-tags/location-tags.module';
 import { CollectionsModule } from './collections/collections.module';
+import { CollectionItemsModule } from './collection-items/collection-items.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CollectionsModule } from './collections/collections.module';
     TagsModule,
     LocationTagsModule,
     CollectionsModule,
+    CollectionItemsModule,
   ],
   controllers: [AppController],
   providers: [AuthService, AppService],

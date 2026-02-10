@@ -24,7 +24,7 @@ export class CollectionsController {
   @ApiResponse({ status: 200, description: 'Collections Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
-  @Get('collections')
+  @Get()
   async getCollections(): Promise<Collections[] | null> {
     return await this.collectionsService.getCollections({});
   }
@@ -57,7 +57,7 @@ export class CollectionsController {
   @ApiResponse({ status: 201, description: 'Collection Created' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
-  @Post('collection')
+  @Post()
   async createCollection(@Body() createCollectionDto: CreateCollectionDto) {
     const { name, description, userId, isPublic } = createCollectionDto;
     return this.collectionsService.createCollection({
