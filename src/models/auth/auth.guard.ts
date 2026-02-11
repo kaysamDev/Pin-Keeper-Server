@@ -7,19 +7,24 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
+interface RequestWithUser extends Request {
+  user: {
+    id: number;
+    email?: string;
+  };
+}
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
+    const token: string | undefined = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
     }
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: process.env['JWT_SECRET'],
       });

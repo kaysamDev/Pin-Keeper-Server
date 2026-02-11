@@ -7,14 +7,23 @@ import {
   Post,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { LocationTagsService } from './location-tags.service';
 import { LocationTags } from '../../generated/prisma/client';
 import { CreateLocationTagDto } from './dto/create-location-tag.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../models/auth/auth.guard';
 
 @ApiTags('location-tags')
+@ApiBearerAuth()
 @Controller('location-tags')
+@UseGuards(AuthGuard)
 export class LocationTagsController {
   constructor(private readonly locationTagsService: LocationTagsService) {}
 

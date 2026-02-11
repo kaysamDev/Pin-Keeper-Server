@@ -8,15 +8,24 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { Tags } from '../../generated/prisma/client';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../models/auth/auth.guard';
 
 @ApiTags('tags')
+@ApiBearerAuth()
 @Controller('tags')
+@UseGuards(AuthGuard)
 export class TagsController {
   constructor(private tagsService: TagsService) {}
 
