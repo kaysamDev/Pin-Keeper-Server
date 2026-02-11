@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ActivityLogsService } from './activity-logs.service';
-import { ActivityLogs } from '../../generated/prisma/client';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 import {
   ApiBearerAuth,
@@ -18,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '../models/auth/auth.guard';
+import { ActivityLogs } from '../../generated/prisma/client';
 
 @ApiTags('activity-logs')
 @ApiBearerAuth()
