@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
-import { Collections } from '../../generated/prisma/client';
+import { Collections } from 'generated/prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import {

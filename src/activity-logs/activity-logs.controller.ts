@@ -17,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '../models/auth/auth.guard';
-import { ActivityLogs } from '../../generated/prisma/client';
+import { ActivityLogs } from 'generated/prisma/client';
 
 @ApiTags('activity-logs')
 @ApiBearerAuth()

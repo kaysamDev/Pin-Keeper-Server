@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LocationTagsService } from './location-tags.service';
-import { LocationTags } from '../../generated/prisma/client';
+import { LocationTags } from 'generated/prisma/client';
 import { CreateLocationTagDto } from './dto/create-location-tag.dto';
 import {
   ApiBearerAuth,
