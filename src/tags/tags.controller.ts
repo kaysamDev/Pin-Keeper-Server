@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
-import { Tags } from '../../generated/prisma/client';
+import { Tags } from 'generated/prisma/client';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import {
