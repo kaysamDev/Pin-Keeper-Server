@@ -8,15 +8,24 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Categories } from '../../generated/prisma/client';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../models/auth/auth.guard';
 
 @ApiTags('categories')
+@ApiBearerAuth()
 @Controller('categories')
+@UseGuards(AuthGuard)
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 

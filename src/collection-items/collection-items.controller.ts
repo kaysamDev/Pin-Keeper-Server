@@ -7,14 +7,23 @@ import {
   Post,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CollectionItemsService } from './collection-items.service';
 import { CollectionItems } from '../../generated/prisma/client';
 import { CreateCollectionItemDto } from './dto/create-collection-item.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../models/auth/auth.guard';
 
 @ApiTags('collection-items')
+@ApiBearerAuth()
 @Controller('collection-items')
+@UseGuards(AuthGuard)
 export class CollectionItemsController {
   constructor(
     private readonly collectionItemsService: CollectionItemsService,

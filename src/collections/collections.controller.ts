@@ -8,15 +8,24 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { Collections } from '../../generated/prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '../models/auth/auth.guard';
 
 @ApiTags('collections')
+@ApiBearerAuth()
 @Controller('collections')
+@UseGuards(AuthGuard)
 export class CollectionsController {
   constructor(private collectionsService: CollectionsService) {}
 
