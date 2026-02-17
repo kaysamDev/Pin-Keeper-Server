@@ -1,17 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
 import { Locations, Prisma } from 'generated/prisma/client';
+import { CACHE_KEYS, CACHE_TTL } from '../cache/cache.constants';
 
 @Injectable()
 export class LocationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async location(
     LocationsWhereUniqueInput: Prisma.LocationsWhereUniqueInput,
   ): Promise<Locations | null> {
-    return this.prisma.locations.findUnique({
+    const cacheKey = CACHE_KEYS.LOCATION_BY_ID(
+      String(LocationsWhereUniqueInput.id),
+    );
+
+    // Try to get from cache
+    const cached = await this.cacheManager.get<Locations>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const location = await this.prisma.locations.findUnique({
       where: LocationsWhereUniqueInput,
     });
+
+    if (location) {
+      await this.cacheManager.set(cacheKey, location, CACHE_TTL.MEDIUM);
+    }
+
+    return location;
   }
 
   async locations(params: {
@@ -22,19 +44,47 @@ export class LocationsService {
     orderBy?: Prisma.LocationsOrderByWithRelationInput;
   }): Promise<Locations[] | null> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.locations.findMany({
+
+    // Only cache if no filters applied (simple list all)
+    const isSimpleQuery = !skip && !take && !cursor && !where && !orderBy;
+
+    if (isSimpleQuery) {
+      const cached = await this.cacheManager.get<Locations[]>(
+        CACHE_KEYS.LOCATIONS_ALL,
+      );
+      if (cached) {
+        return cached;
+      }
+    }
+
+    const locations = await this.prisma.locations.findMany({
       skip,
       take,
       cursor,
       where,
       orderBy,
     });
+
+    if (isSimpleQuery && locations) {
+      await this.cacheManager.set(
+        CACHE_KEYS.LOCATIONS_ALL,
+        locations,
+        CACHE_TTL.MEDIUM,
+      );
+    }
+
+    return locations;
   }
 
   async createLocation(data: Prisma.LocationsCreateInput): Promise<Locations> {
-    return this.prisma.locations.create({
+    const location = await this.prisma.locations.create({
       data,
     });
+
+    // Invalidate list cache
+    await this.cacheManager.del(CACHE_KEYS.LOCATIONS_ALL);
+
+    return location;
   }
 
   async updateLocation(params: {
@@ -42,17 +92,29 @@ export class LocationsService {
     data: Prisma.LocationsUpdateInput;
   }): Promise<Locations> {
     const { where, data } = params;
-    return this.prisma.locations.update({
+    const location = await this.prisma.locations.update({
       data,
       where,
     });
+
+    // Invalidate caches
+    await this.cacheManager.del(CACHE_KEYS.LOCATION_BY_ID(String(where.id)));
+    await this.cacheManager.del(CACHE_KEYS.LOCATIONS_ALL);
+
+    return location;
   }
 
   async deleteLocation(
     where: Prisma.LocationsWhereUniqueInput,
   ): Promise<Locations> {
-    return this.prisma.locations.delete({
+    const location = await this.prisma.locations.delete({
       where,
     });
+
+    // Invalidate caches
+    await this.cacheManager.del(CACHE_KEYS.LOCATION_BY_ID(String(where.id)));
+    await this.cacheManager.del(CACHE_KEYS.LOCATIONS_ALL);
+
+    return location;
   }
 }

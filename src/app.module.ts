@@ -14,10 +14,12 @@ import { CollectionItemsModule } from './collection-items/collection-items.modul
 import { ActivityLogsModule } from './activity-logs/activity-logs.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ActivityLogsInterceptor } from './activity-logs/activity-logs.interceptor';
+import { RedisCacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    RedisCacheModule,
     AuthModule,
     UsersModule,
     LocationsModule,

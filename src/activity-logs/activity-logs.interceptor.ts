@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { ActivityLogsService } from './activity-logs.service';
-import { ActivityLogsCreateInput } from '../../generated/prisma/models/ActivityLogs';
+import { ActivityLogsCreateInput } from 'generated/prisma/models/ActivityLogs';
 import { Request, Response } from 'express';
 
 interface RequestWithUser extends Request {
