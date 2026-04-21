@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CollectionItemsService } from './collection-items.service';
-import { CollectionItems } from 'generated/prisma/client';
+import { CollectionItems } from '../../generated/prisma/client';
 import { CreateCollectionItemDto } from './dto/create-collection-item.dto';
 import {
   ApiBearerAuth,

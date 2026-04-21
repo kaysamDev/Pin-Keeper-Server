@@ -8,8 +8,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { UserService } from './users.service';
-import { Users } from 'generated/prisma/client';
-import type { UsersCreateInput } from 'generated/prisma/models/Users';
+import { Users } from '../../../generated/prisma/client';
+import type { UsersCreateInput } from '../../../generated/prisma/models/Users';
 
 @Controller()
 export class UserController {

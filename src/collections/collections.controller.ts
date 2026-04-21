@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
-import { Collections } from 'generated/prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import {
@@ -27,14 +26,14 @@ import { AuthGuard } from '../models/auth/auth.guard';
 @Controller('collections')
 @UseGuards(AuthGuard)
 export class CollectionsController {
-  constructor(private collectionsService: CollectionsService) {}
+  constructor(private readonly collectionsService: CollectionsService) {}
 
   @ApiOperation({ summary: 'Get all collections' })
   @ApiResponse({ status: 200, description: 'Collections Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
   @Get()
-  async getCollections(): Promise<Collections[] | null> {
+  async getCollections(): ReturnType<CollectionsService['getCollections']> {
     return await this.collectionsService.getCollections({});
   }
 
@@ -45,7 +44,7 @@ export class CollectionsController {
   @Get('collection/:id')
   async getCollectionById(
     @Param('id') id: string,
-  ): Promise<Collections | null> {
+  ): ReturnType<CollectionsService['getCollection']> {
     return await this.collectionsService.getCollection({ id: Number(id) });
   }
 
@@ -56,7 +55,7 @@ export class CollectionsController {
   @Get('user/:userId')
   async getCollectionsByUserId(
     @Param('userId') userId: string,
-  ): Promise<Collections[] | null> {
+  ): ReturnType<CollectionsService['getCollections']> {
     return await this.collectionsService.getCollections({
       where: { userId: Number(userId) },
     });
@@ -87,7 +86,7 @@ export class CollectionsController {
   async updateCollection(
     @Param('id') id: string,
     @Body() updateCollectionDto: UpdateCollectionDto,
-  ): Promise<Collections> {
+  ): ReturnType<CollectionsService['updateCollection']> {
     const { name, description, userId, isPublic } = updateCollectionDto;
 
     return this.collectionsService.updateCollection({
@@ -110,7 +109,9 @@ export class CollectionsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
   @Delete('collection/:id')
-  async deleteCollection(@Param('id') id: string): Promise<Collections> {
+  async deleteCollection(
+    @Param('id') id: string,
+  ): ReturnType<CollectionsService['deleteCollection']> {
     return this.collectionsService.deleteCollection({ id: Number(id) });
   }
 }

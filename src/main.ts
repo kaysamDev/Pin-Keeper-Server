@@ -5,6 +5,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: '*', // Allow all origins
+    credentials: true, // Allow cookies and other credentials
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Pin Keeper')
     .setDescription('The Pin Keeper API description')

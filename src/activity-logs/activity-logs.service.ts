@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { ActivityLogs, Prisma } from 'generated/prisma/client';
+import { ActivityLogs, Prisma } from '../../generated/prisma/client';
 
 @Injectable()
 export class ActivityLogsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getActivityLog(
     ActivityLogsWhereUniqueInput: Prisma.ActivityLogsWhereUniqueInput,

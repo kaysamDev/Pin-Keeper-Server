@@ -17,21 +17,20 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '../models/auth/auth.guard';
-import { ActivityLogs } from 'generated/prisma/client';
 
 @ApiTags('activity-logs')
 @ApiBearerAuth()
 @Controller('activity-logs')
 @UseGuards(AuthGuard)
 export class ActivityLogsController {
-  constructor(private activityLogsService: ActivityLogsService) {}
+  constructor(private readonly activityLogsService: ActivityLogsService) {}
 
   @ApiOperation({ summary: 'Get all activity logs' })
   @ApiResponse({ status: 200, description: 'Activity Logs Found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
   @Get()
-  async getActivityLogs(): Promise<ActivityLogs[] | null> {
+  async getActivityLogs(): ReturnType<ActivityLogsService['getActivityLogs']> {
     return await this.activityLogsService.getActivityLogs({
       orderBy: { createdAt: 'desc' },
     });
@@ -44,7 +43,7 @@ export class ActivityLogsController {
   @Get('activity-log/:id')
   async getActivityLogById(
     @Param('id') id: string,
-  ): Promise<ActivityLogs | null> {
+  ): ReturnType<ActivityLogsService['getActivityLog']> {
     return await this.activityLogsService.getActivityLog({ id: Number(id) });
   }
 
@@ -55,7 +54,7 @@ export class ActivityLogsController {
   @Get('user/:userId')
   async getActivityLogsByUserId(
     @Param('userId') userId: string,
-  ): Promise<ActivityLogs[] | null> {
+  ): ReturnType<ActivityLogsService['getActivityLogsByUserId']> {
     return await this.activityLogsService.getActivityLogsByUserId(
       Number(userId),
     );
@@ -66,7 +65,9 @@ export class ActivityLogsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async createActivityLog(@Body() createActivityLogDto: CreateActivityLogDto) {
+  async createActivityLog(
+    @Body() createActivityLogDto: CreateActivityLogDto,
+  ): ReturnType<ActivityLogsService['createActivityLog']> {
     const { userId, action, metadata } = createActivityLogDto;
     return this.activityLogsService.createActivityLog({
       action,
