@@ -2,14 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
-import { Tags, Prisma } from 'generated/prisma/client';
+import { Tags, Prisma } from '../../generated/prisma/client';
 import { CACHE_KEYS, CACHE_TTL } from '../cache/cache.constants';
 
 @Injectable()
 export class TagsService {
   constructor(
-    private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async getTag(

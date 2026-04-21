@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
-import { Categories, Prisma } from 'generated/prisma/client';
+import { Categories, Prisma } from '../../generated/prisma/client';
 import { CACHE_KEYS, CACHE_TTL } from '../cache/cache.constants';
 
 @Injectable()

@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LocationsService } from './locations.service';
-import { Locations } from 'generated/prisma/client';
+import { Locations } from '../../generated/prisma/client';
 import {
   ApiBearerAuth,
   ApiOperation,

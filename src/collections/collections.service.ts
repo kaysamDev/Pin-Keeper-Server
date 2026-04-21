@@ -2,36 +2,48 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma.service';
-import { Collections, Prisma } from 'generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { CACHE_KEYS, CACHE_TTL } from '../cache/cache.constants';
+
+type CollectionEntity = {
+  id: number;
+  userId: number;
+  [key: string]: unknown;
+};
+
+type CollectionWithRelations = CollectionEntity & {
+  user?: unknown;
+  CollectionItems?: unknown[];
+};
 
 @Injectable()
 export class CollectionsService {
   constructor(
-    private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async getCollection(
     CollectionsWhereUniqueInput: Prisma.CollectionsWhereUniqueInput,
-  ): Promise<Collections | null> {
+  ): Promise<CollectionWithRelations | null> {
     const cacheKey = CACHE_KEYS.COLLECTION_BY_ID(
       String(CollectionsWhereUniqueInput.id),
     );
 
     // Try to get from cache
-    const cached = await this.cacheManager.get<Collections>(cacheKey);
+    const cached =
+      await this.cacheManager.get<CollectionWithRelations>(cacheKey);
     if (cached) {
       return cached;
     }
 
-    const collection = await this.prisma.collections.findUnique({
+    const collection = (await this.prisma.collections.findUnique({
       where: CollectionsWhereUniqueInput,
       include: {
         user: true,
         CollectionItems: true,
       },
-    });
+    })) as unknown as CollectionWithRelations | null;
 
     if (collection) {
       await this.cacheManager.set(cacheKey, collection, CACHE_TTL.SHORT);
@@ -46,22 +58,27 @@ export class CollectionsService {
     cursor?: Prisma.CollectionsWhereUniqueInput;
     where?: Prisma.CollectionsWhereInput;
     orderBy?: Prisma.CollectionsOrderByWithRelationInput;
-  }): Promise<Collections[] | null> {
+  }): Promise<CollectionWithRelations[] | null> {
     const { skip, take, cursor, where, orderBy } = params;
 
     // Cache user-specific collections list
-    const userId = where?.userId as string | undefined;
-    const isUserSpecificQuery = userId && !skip && !take && !cursor && !orderBy;
-    const cacheKey = userId ? CACHE_KEYS.COLLECTIONS_BY_USER(userId) : null;
+    const userId = where?.userId;
+    const isUserSpecificQuery =
+      typeof userId === 'number' && !skip && !take && !cursor && !orderBy;
+    const cacheKey =
+      typeof userId === 'number'
+        ? CACHE_KEYS.COLLECTIONS_BY_USER(String(userId))
+        : null;
 
     if (isUserSpecificQuery && cacheKey) {
-      const cached = await this.cacheManager.get<Collections[]>(cacheKey);
+      const cached =
+        await this.cacheManager.get<CollectionWithRelations[]>(cacheKey);
       if (cached) {
         return cached;
       }
     }
 
-    const collections = await this.prisma.collections.findMany({
+    const collections = (await this.prisma.collections.findMany({
       skip,
       take,
       cursor,
@@ -71,7 +88,7 @@ export class CollectionsService {
         user: true,
         CollectionItems: true,
       },
-    });
+    })) as unknown as CollectionWithRelations[];
 
     if (isUserSpecificQuery && cacheKey && collections) {
       await this.cacheManager.set(cacheKey, collections, CACHE_TTL.SHORT);
@@ -82,14 +99,14 @@ export class CollectionsService {
 
   async createCollection(
     data: Prisma.CollectionsCreateInput,
-  ): Promise<Collections> {
-    const collection = await this.prisma.collections.create({
+  ): Promise<CollectionWithRelations> {
+    const collection = (await this.prisma.collections.create({
       data,
       include: {
         user: true,
         CollectionItems: true,
       },
-    });
+    })) as unknown as CollectionWithRelations;
 
     // Invalidate user's collections cache
     if (collection.userId) {
@@ -104,16 +121,16 @@ export class CollectionsService {
   async updateCollection(params: {
     where: Prisma.CollectionsWhereUniqueInput;
     data: Prisma.CollectionsUpdateInput;
-  }): Promise<Collections> {
+  }): Promise<CollectionWithRelations> {
     const { where, data } = params;
-    const collection = await this.prisma.collections.update({
+    const collection = (await this.prisma.collections.update({
       data,
       where,
       include: {
         user: true,
         CollectionItems: true,
       },
-    });
+    })) as unknown as CollectionWithRelations;
 
     // Invalidate caches
     await this.cacheManager.del(CACHE_KEYS.COLLECTION_BY_ID(String(where.id)));
@@ -128,10 +145,10 @@ export class CollectionsService {
 
   async deleteCollection(
     where: Prisma.CollectionsWhereUniqueInput,
-  ): Promise<Collections> {
-    const collection = await this.prisma.collections.delete({
+  ): Promise<CollectionEntity> {
+    const collection = (await this.prisma.collections.delete({
       where,
-    });
+    })) as unknown as CollectionEntity;
 
     // Invalidate caches
     await this.cacheManager.del(CACHE_KEYS.COLLECTION_BY_ID(String(where.id)));
