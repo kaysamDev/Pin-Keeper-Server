@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { ActivityLogsService } from './activity-logs.service';
-import { ActivityLogsCreateInput } from 'generated/prisma/models';
+import type { Prisma } from '../../generated/prisma/client';
 import { Request, Response } from 'express';
 
 interface RequestWithUser extends Request {
@@ -55,7 +55,7 @@ export class ActivityLogsInterceptor implements NestInterceptor {
         request.originalUrl || request.url,
       );
 
-      const activityData: ActivityLogsCreateInput = {
+      const activityData: Prisma.ActivityLogsCreateInput = {
         action,
         metadata: {
           method: request.method,
