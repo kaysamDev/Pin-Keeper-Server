@@ -100,6 +100,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@Request() req: RequestWithUser) {
-    return req.user;
+    const userId = req.user?.sub || req.user?.id;
+    return this.authService.getProfile(userId ?? 0);
   }
 }
