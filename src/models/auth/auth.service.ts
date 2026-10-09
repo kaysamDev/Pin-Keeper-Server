@@ -1,14 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../../src/models/users/users.service';
+import {
+  UserProfile,
+  UserService,
+} from '../../../src/models/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from '../../../generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 import { RefreshTokenService } from './refresh-token.service';
 import { TokenResponseDto } from './dto/token-response.dto';
-
-export type Profile = {
-  user: Users;
-};
 
 interface JwtPayload {
   sub: number;
@@ -21,9 +20,9 @@ interface JwtPayload {
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
-    private jwtService: JwtService,
-    private refreshTokenService: RefreshTokenService,
+    private readonly usersService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
   saltRounds = 10;
@@ -76,6 +75,22 @@ export class AuthService {
       email: email,
       password: hashedPassword,
     });
+  }
+
+  async getProfile(userId: number): Promise<UserProfile> {
+    if (!Number.isInteger(userId) || userId <= 0) {
+      throw new UnauthorizedException('User ID not found');
+    }
+
+    const profileService = this.usersService as unknown as {
+      profile: (id: number) => Promise<UserProfile | null>;
+    };
+    const profile = await profileService.profile(userId);
+    if (!profile) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return profile;
   }
 
   async refreshTokens(refreshToken: string): Promise<TokenResponseDto> {

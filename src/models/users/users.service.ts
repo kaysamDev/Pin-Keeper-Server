@@ -2,9 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { Prisma, Users } from '../../../generated/prisma/client';
 
+const userProfileSelect = {
+  id: true,
+  email: true,
+  fullName: true,
+  profileImageUrl: true,
+  role: true,
+  provider: true,
+  createdAt: true,
+  Location: true,
+  Collections: true,
+  ActivityLogs: true,
+  RefreshTokens: {
+    select: {
+      id: true,
+      userId: true,
+      createdAt: true,
+      expiresAt: true,
+    },
+  },
+} satisfies Prisma.UsersSelect;
+
+export type UserProfile = {
+  id: number;
+  email: string;
+  fullName: string | null;
+  profileImageUrl: string | null;
+  role: string;
+  provider: string | null;
+  createdAt: Date;
+  Location: unknown[];
+  Collections: unknown[];
+  ActivityLogs: unknown[];
+  RefreshTokens: unknown[];
+};
+
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async user(
     userWhereUniqueInput: Prisma.UsersWhereUniqueInput,
@@ -12,6 +47,15 @@ export class UserService {
     return this.prisma.users.findUnique({
       where: userWhereUniqueInput,
     });
+  }
+
+  async profile(userId: number): Promise<UserProfile | null> {
+    const profile = await this.prisma.users.findUnique({
+      where: { id: userId },
+      select: userProfileSelect,
+    });
+
+    return profile;
   }
 
   async users(params: {
